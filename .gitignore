@@ -192,6 +192,7 @@ tests/testGravityDerivatives
 tests/testGravitySpeed
 tests/testPotentialSelf
 tests/testPotentialPair
+tests/testSofteningDerivative
 tests/testEOS
 tests/testEOS*.txt
 tests/testEOS*.png

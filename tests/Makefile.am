@@ -34,7 +34,7 @@ TESTS = testGreetings testMaths testReading.sh testKernel testKernelAccuracy \
         testAdiabaticIndex testRandom testRandomSpacing testRandomPoisson testErfc \
         testThreadpool testDump testCSDS testInteractions.sh \
         testGravityDerivatives testPeriodicBC.sh testPeriodicBCPerturbed.sh \
-        testPotentialSelf testPotentialPair testEOS testUtilities testSelectOutput.sh \
+        testPotentialSelf testPotentialPair testSofteningDerivative testEOS testUtilities testSelectOutput.sh \
         testCbrt testCosmologyAccuracy testRandomCone testOutputList testFormat.sh \
         test27cellsStars.sh test27cellsStarsPerturbed.sh testHydroMPIrules \
         testAtomic testGravitySpeed testMeshGravityRebuildCheck testNeutrinoCosmology.sh \
@@ -49,7 +49,7 @@ check_PROGRAMS = testGreetings testReading testTimeIntegration testKernelLongGra
          testSymmetry testDistance testThreadpool testRandomSpacing testErfc \
          testAdiabaticIndex testRiemannExact testRiemannTRRS testRandomPoisson testRandomCone \
          testRiemannHLLC testMatrixInversion testDump testCSDS \
-		 testPeriodicBC testGravityDerivatives testPotentialSelf testPotentialPair testEOS \
+		 testPeriodicBC testGravityDerivatives testPotentialSelf testPotentialPair testSofteningDerivative testEOS \
 		 testUtilities testSelectOutput testCbrt testCosmologyAccuracy testOutputList \
 		 test27cellsStars test27cellsStars_subset testCooling testComovingCooling testFeedback \
 		 testHashmap testAtomic testHydroMPIrules testGravitySpeed testMeshGravityRebuildCheck \
@@ -154,6 +154,8 @@ testGravitySpeed_SOURCES = testGravitySpeed.c
 testPotentialSelf_SOURCES = testPotentialSelf.c
 
 testPotentialPair_SOURCES = testPotentialPair.c
+
+testSofteningDerivative_SOURCES = testSofteningDerivative.c
 
 testEOS_SOURCES = testEOS.c
 

@@ -27,9 +27,34 @@
 /* Local headers. */
 #include "adaptive_softening_struct.h"
 #include "inline.h"
+#include "kernel_gravity.h"
 #include "kernel_hydro.h"
 
 #ifdef ADAPTIVE_SOFTENING
+
+/**
+ * @brief Computes dphi/dh, the derivative of the softened potential of a unit
+ * mass with respect to the smoothing length of the particle setting the
+ * softening.
+ *
+ * The gravitational softening length is H = kernel_gamma * h, so
+ * dphi/dh = kernel_gamma * dphi/dH. The derivative only depends on the gravity
+ * softening kernel, so this is valid for any choice of hydro kernel.
+ *
+ * Assumes r <= H (i.e. u <= kernel_gamma).
+ *
+ * @param u The ratio r / h.
+ * @param h_inv 1 / h.
+ */
+__attribute__((always_inline, const)) INLINE static float potential_dh(
+    const float u, const float h_inv) {
+
+  /* Ratio of r to the gravitational softening length H = kernel_gamma * h */
+  const float q = fminf(u * kernel_gamma_inv, 1.f);
+
+  /* kernel_gamma * dphi/dH = kernel_gamma * W(q) / H^2 = W(q) / (gamma h^2) */
+  return kernel_grav_pot_dH_eval(q) * h_inv * h_inv * kernel_gamma_inv;
+}
 
 /**
  * @brief Computes the contribution to the softening length change term.

@@ -98,6 +98,27 @@ __attribute__((const)) INLINE static float kernel_grav_force_eval(
   return W;
 }
 
+/**
+ * @brief Computes the derivative of the softened potential with respect to
+ * the softening length.
+ *
+ * The softened potential of a point mass is phi(r, H) = m W_pot(u) / H with
+ * u = r / H, so H dphi/dH = -(phi + r dphi/dr). In terms of the potential and
+ * force kernels this gives dphi/dH = m W(u) / H^2 with
+ * W(u) = -(W_pot(u) + u^2 W_f(u)).
+ *
+ * The result vanishes at u = 1, where the potential becomes -m/r for any H.
+ *
+ * This functions assumes 0 <= u <= 1.
+ *
+ * @param u The ratio of the distance to the spline softening length $u = x/H$.
+ */
+__attribute__((const)) INLINE static float kernel_grav_pot_dH_eval(
+    const float u) {
+
+  return -(kernel_grav_pot_eval(u) + u * u * kernel_grav_force_eval(u));
+}
+
 #ifdef SWIFT_GRAVITY_FORCE_CHECKS
 
 /**
