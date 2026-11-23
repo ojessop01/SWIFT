@@ -88,7 +88,7 @@ __attribute__((always_inline)) INLINE static void runner_iact_density(
   pi->density.wcount_dh -= (hydro_dimension * wi + ui * wi_dx);
 
   /* Compute contribution to the adpative softening correction */
-  adaptive_softening_add_correction_term(pi, ui, hi_inv, mj);
+  adaptive_softening_add_correction_term(pi, ui, hi_inv, mj, hi, hj);
 
   /* Compute the kernel function for pj */
   const float hj_inv = 1.f / hj;
@@ -104,7 +104,7 @@ __attribute__((always_inline)) INLINE static void runner_iact_density(
   pj->density.wcount_dh -= (hydro_dimension * wj + uj * wj_dx);
 
   /* Compute contribution to the adpative softening correction */
-  adaptive_softening_add_correction_term(pj, uj, hj_inv, mi);
+  adaptive_softening_add_correction_term(pj, uj, hj_inv, mi, hj, hi);
 
   const float faci = mj * wi_dx * r_inv;
   const float facj = mi * wj_dx * r_inv;
@@ -191,7 +191,7 @@ __attribute__((always_inline)) INLINE static void runner_iact_nonsym_density(
   pi->density.wcount_dh -= (hydro_dimension * wi + ui * wi_dx);
 
   /* Compute contribution to the adpative softening correction */
-  adaptive_softening_add_correction_term(pi, ui, hi_inv, mj);
+  adaptive_softening_add_correction_term(pi, ui, hi_inv, mj, hi, hj);
 
   const float fac = mj * wi_dx * r_inv;
 

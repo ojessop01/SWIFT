@@ -90,7 +90,12 @@ INLINE static void adaptive_softening_init_part(struct part *p) {
  * @brief Finishes the density calculation.
  *
  * Finish the equation 26 of Price & Monaghan 2007, MNRAS, 374, 4
- * by adding the pre-factors. Also adds the G/2 factor of eq. 27.
+ * by adding the pre-factors. Also adds the factor G of the acceleration.
+ *
+ * Price & Monaghan average the two softening lengths of a pair, which gives
+ * a factor G/2 in their eq. 27. The gravity scheme instead softens a pair with
+ * the larger of the two softening lengths, which gives a factor G (the pair's
+ * potential depends fully on h_i when h_i is the larger).
  *
  * @param p The particle to act upon.
  * @param props The properties of the gravity scheme.
@@ -98,15 +103,23 @@ INLINE static void adaptive_softening_init_part(struct part *p) {
 INLINE static void adaptive_softening_end_density(
     struct part *p, const struct gravity_props *props) {
 
+  /* Where the softening is held at one of its limits it does not change with
+   * h, so there is no correction (see gravity_update_softening()). */
+  const float softening = p->h * kernel_gamma;
+  if (softening > props->max_adaptive_softening ||
+      softening < props->min_adaptive_softening) {
+    p->adaptive_softening_data.zeta = 0.f;
+    return;
+  }
+
   /* Finish calculation of the adaptive softening prefactor (zeta)
    * Pre-factor in eq. 26 of Price & Monaghan 2007 */
   const float rho_inv = 1.f / p->rho;
   const float h_drho = -p->h * rho_inv * hydro_dimension_inv;
   p->adaptive_softening_data.zeta *= h_drho;
 
-  /* Multiply in the Gravitational constant
-   * See the prefactor in eq. 27 of Price & Monaghan 2007 */
-  p->adaptive_softening_data.zeta *= 0.5f * props->G_Newton;
+  /* Multiply in the Gravitational constant */
+  p->adaptive_softening_data.zeta *= props->G_Newton;
 }
 
 #else

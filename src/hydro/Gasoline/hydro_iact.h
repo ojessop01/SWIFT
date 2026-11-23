@@ -68,7 +68,7 @@ __attribute__((always_inline)) INLINE static void runner_iact_density(
   pi->density.wcount += wi;
   pi->density.wcount_dh -= (hydro_dimension * wi + ui * wi_dx);
 
-  adaptive_softening_add_correction_term(pi, ui, hi_inv, mj);
+  adaptive_softening_add_correction_term(pi, ui, hi_inv, mj, hi, hj);
 
   /* Compute density of pj. */
   const float hj_inv = 1.f / hj;
@@ -81,7 +81,7 @@ __attribute__((always_inline)) INLINE static void runner_iact_density(
   pj->density.wcount += wj;
   pj->density.wcount_dh -= (hydro_dimension * wj + uj * wj_dx);
 
-  adaptive_softening_add_correction_term(pj, uj, hj_inv, mi);
+  adaptive_softening_add_correction_term(pj, uj, hj_inv, mi, hj, hi);
 
   /* Now we need to compute the div terms */
   const float r_inv = r ? 1.0f / r : 0.0f;
@@ -152,7 +152,7 @@ __attribute__((always_inline)) INLINE static void runner_iact_nonsym_density(
   pi->density.wcount += wi;
   pi->density.wcount_dh -= (hydro_dimension * wi + ui * wi_dx);
 
-  adaptive_softening_add_correction_term(pi, ui, h_inv, mj);
+  adaptive_softening_add_correction_term(pi, ui, h_inv, mj, hi, hj);
 
   const float r_inv = r ? 1.0f / r : 0.0f;
   const float faci = mj * wi_dx * r_inv;

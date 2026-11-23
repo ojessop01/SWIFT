@@ -62,16 +62,26 @@ __attribute__((always_inline, const)) INLINE static float potential_dh(
  * Computes equation 26 of Price & Monaghan 2007, MNRAS, 374, 4.
  * without the prefactor. The prefactor gets added in end_density().
  *
+ * The gravity scheme softens a pair with the larger of the two softening
+ * lengths, so the pair's potential only depends on h_i when h_i > h_j. Equal
+ * smoothing lengths share the derivative equally.
+ *
  * @param pi The #part for which we compute terms.
  * @param ui The ratio of the inter-particle distance to the smoothing length.
  * @param hi_inv The inverse the particle's smoothing length.
  * @param mj The mass of the other particle.
+ * @param hi The smoothing length of particle i.
+ * @param hj The smoothing length of particle j.
  */
 __attribute__((always_inline)) INLINE static void
 adaptive_softening_add_correction_term(struct part *pi, const float ui,
-                                       const float hi_inv, const float mj) {
+                                       const float hi_inv, const float mj,
+                                       const float hi, const float hj) {
 
-  pi->adaptive_softening_data.zeta += mj * potential_dh(ui, hi_inv);
+  if (hi < hj) return;
+  const float weight = (hi > hj) ? 1.f : 0.5f;
+
+  pi->adaptive_softening_data.zeta += weight * mj * potential_dh(ui, hi_inv);
 }
 
 /**
@@ -101,10 +111,11 @@ adaptive_softening_get_acc_term(const struct part *restrict pi,
 
   /* Adaptive softening acceleration term
    * Price & Monaghan 2007, eq. 27 (second term)
-   * Note that G/2 is included in the zeta terms.
+   * Note that G is included in the zeta terms (G/2 in Price & Monaghan's
+   * notation, who average the softening lengths of a pair).
    * Note also that f_ij is 1/Omega_i in Price's notation. */
   const float adap_acc_term =
-      0.5f * (zetai * f_ij * wi_dr + zetaj * f_ji * wj_dr) * r_inv;
+      (zetai * f_ij * wi_dr + zetaj * f_ji * wj_dr) * r_inv;
 
   return adap_acc_term;
 }
@@ -120,10 +131,13 @@ adaptive_softening_get_acc_term(const struct part *restrict pi,
  * @param ui The ratio of the inter-particle distance to the smoothing length.
  * @param hi_inv The inverse the particle's smoothing length.
  * @param mj The mass of the other particle.
+ * @param hi The smoothing length of particle i.
+ * @param hj The smoothing length of particle j.
  */
 __attribute__((always_inline)) INLINE static void
 adaptive_softening_add_correction_term(struct part *pi, const float ui,
-                                       const float hi_inv, const float mj) {}
+                                       const float hi_inv, const float mj,
+                                       const float hi, const float hj) {}
 
 /**
  * @brief Computes the norm of the accleration due to the change in softening.

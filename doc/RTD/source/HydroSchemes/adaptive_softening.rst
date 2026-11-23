@@ -24,3 +24,12 @@ thus adapting with the changes in density field.  To use adaptive softening, use
 The adaptive softening scheme is implemented for all the SPH schemes above but
 only for the Wendland-C2 kernel as it is the kernel used for the gravity
 softening throughout the code.
+
+The gravity scheme softens each pair of particles with the larger of their two
+softening lengths. The correction terms follow this rule: the potential of a
+gas pair depends on the smoothing length of the particle with the larger
+softening, and on neither when the softening is held at
+``min_adaptive_softening`` or ``max_adaptive_softening``. The terms only
+include gas neighbours. Pairs of a gas particle and a dark matter, star or
+black hole particle whose softening is smaller are not corrected, so energy is
+not exactly conserved for those interactions.
